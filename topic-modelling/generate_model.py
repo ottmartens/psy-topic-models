@@ -17,15 +17,16 @@ def main():
         exit(1)
 
     try:
-        source_file = sys.argv[1]
-        model_name = sys.argv[2]
+        model_name = sys.argv[1]
     except:
         print(
-            'specify lemmatized source file and model name from the command line arguments')
+            'Specify model name from the command line arguments (the same one from preprocessing')
         exit(1)
 
-    log(INFO, 'Parsing lemmatized texts from file {}'.format(source_file))
-    ids, texts = readCSV(source_file)
+    source_file_path = 'models/{}_lemmatized.csv'.format(model_name)
+
+    log(INFO, 'Parsing lemmatized texts from file {}'.format(source_file_path))
+    ids, texts = readCSV(source_file_path)
 
     # Generate a dictionary of the corpus
     log(INFO, "Generating a dictionary")
