@@ -1,19 +1,25 @@
 
 
+# Psychology topic models
 
+Requires: `docker`, `node`, `python`
 
-## 1. Download corpus
+### 1. Parsing, storing in db
 
-## 2. Parse, store in db
+_in pubmed-to-db:_
+##### 1.1 Install dependencies: `npm install`
+##### 1.2 Start database: `docker-comppose up`
+##### 1.2 Create database table structure: `node db-setup.js`
+##### 1.2 Parse file: `node parse-from-xml.js <path-to-xml-file>`
+_(xml-file refers to an export from the pubmed database)_
 
-### In pubmed-to-tb:
-2.1 start database: `docker-comppose up`
-2.2 create tables: `node db-setup.js`
-2.2 parse file: `node index.js`
+## 2. Preprocess, generate topic model
 
-## 3. Preprocess, generate topic model
-
-### In topic-modelling:
-3.1 install modules `pip install nltk spacy gensim`
-3.2 download nltk stopwords: `python download_stopwords.py`
-3.3 download spacy en module: `python3 -m spacy download en`
+_in topic-modelling:_
+##### 2.1 Install modules `pip install nltk spacy gensim`
+##### 2.2 Download nltk stopwords: `python download_stopwords.py`
+##### 2.3 Download spacy en module: `python -m spacy download en`
+##### 2.4 Download Mallet, set `MALLET_PATH` environment variable
+##### 2.5 Preprocess the texts: `python preprocess.py <model-name>`
+##### 2.6 Generate a topic model: `python generate_model.py <mode-name>`
+##### 2.7 Extract topics to a csv file: `python extract_topics.py <model-name>`
