@@ -23,7 +23,7 @@ def makeTrigrams(texts, bigramPhraser, trigramPhraser):
 
 
 def lemmatize(texts):
-    return [[token.lemma_ for token in en_model(" ".join(abstract))] for abstract in texts]
+    return [[token.lemma_ for token in en_model(" ".join(abstract)) if token.tag_ != 'NNPS'] for abstract in texts]
 
 
 def generatePhrasers(texts, min_count, threshold):
@@ -42,4 +42,3 @@ def createDictionary(texts):
 
 def createCorpus(id2word, texts):
     return [id2word.doc2bow(text) for text in texts]
-
