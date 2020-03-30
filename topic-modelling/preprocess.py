@@ -3,20 +3,20 @@ import logging
 from logging import log, INFO
 
 from fetch_data import getAbstracts
-from preprocess import *
-from utils import writeCSV
+from preprocess_helpers import *
+from utils import writeCSV, readCSV
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
 
 try:
     model_name = sys.argv[1]
-    data_count = sys.argv[2]
 except:
-    print('Specify model name (and data count) from the command line')
+    print('Specify model name from the command line')
+    exit(1)
 
 # Query abstracts from db
-log(INFO, 'Querying {} abstracts'.format(data_count))
+log(INFO, 'Querying abstracts')
 texts, ids = getAbstracts()
 log(INFO, "Found {} abstracts".format(len(texts)))
 
@@ -38,16 +38,14 @@ bigrams = makeBigrams(texts, bigramPhraser)
 log(INFO, 'Generating trigrams')
 trigrams = makeTrigrams(texts, bigramPhraser, trigramPhraser)
 
-
 # Lemmatize the texts
 log(INFO, "Lemmatizing")
-lemmatizedTexts = lemmatize(texts)
-
+texts = lemmatize(trigrams)
 
 # Write preprocessed texts to a file
 file_path = 'models/{}_lemmatized.csv'.format(model_name)
 log(INFO, "Writing lemmatized abstracts to file {}".format(file_path))
 
-writeCSV(file_name, list(zip(ids, lemmatizedTexts)))
+writeCSV(file_path, list(zip(ids, texts)))
 
 log(INFO, "Finished")
