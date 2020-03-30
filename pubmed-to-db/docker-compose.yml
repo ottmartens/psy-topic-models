@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: pubmed
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - pubmed-to-db:/var/lib/mysql
+    ports: 
+      - "3306:3306"
+volumes:
+  pubmed-to-db:

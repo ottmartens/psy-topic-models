@@ -1,0 +1,9 @@
+.vscode/
+
+pubmed-to-db/node_modules
+
+topic-modelling/__pycache__
+
+topic-modelling/models/*
+
+topic-modelling/*.csv
