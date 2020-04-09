@@ -2,30 +2,36 @@ import gensim
 import csv
 import sys
 
-model_name = sys.argv[1]
 
-mallet_lda_model = gensim.models.utils.SaveLoad.load('models/{}'.format(model_name))
+try:
+    model_name = sys.argv[1]
+    num_topics = int(sys.argv[2])
+except:
+    print('Specify model name and number of topics as arguments')
+    exit(1)
 
-topics = mallet_lda_model.show_topics(formatted=False, num_topics=25)
+mallet_lda_model = gensim.models.utils.SaveLoad.load(
+    'models/{}'.format(model_name))
+
+topics = mallet_lda_model.show_topics(formatted=False, num_topics=num_topics)
 
 topic_file_path = 'models/{}_topics.csv'.format(model_name)
 
 with open(topic_file_path, 'w') as file:
     writer = csv.writer(file)
 
-    header = []
-    for i in range(25):
-        header.extend((i+1, 'prob'))
+    for topic in topics:
 
-    writer.writerow(header)
+        writer.writerow([])
+        writer.writerow([topic[0] + 1])
 
-    for i in range(10):
-        row = []
-        for topic in topics:
+        for i in range(10):
+
             word = topic[1][i][0]
             prob = topic[1][i][1]
-            row.extend((word, round(prob, 4)))
-        writer.writerow(row)
+
+            writer.writerow((word, round(prob * 100, 4)))
+
+    file.close()
 
 print('Wrote topics to result file {}'.format(topic_file_path))
-
