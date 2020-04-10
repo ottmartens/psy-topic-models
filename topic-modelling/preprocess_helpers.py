@@ -33,7 +33,7 @@ def applyWordnetMultiterms(texts, multitermDict):
                 multiterm = "{}_{}".format(lastword, word)
                 key = multiterm[0]
 
-                if multiterm in multitermDict.get(key):
+                if multitermDict.get(key) != None and multiterm in multitermDict.get(key):
                     resultText[-1] = multiterm
                 else:
                     resultText.append(word)
