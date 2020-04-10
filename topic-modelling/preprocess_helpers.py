@@ -2,38 +2,75 @@ import gensim
 from gensim.utils import simple_preprocess
 import spacy
 from nltk.corpus import stopwords
+import logging
+from logging import log, INFO
+
+from utils import *
 
 stop_words = stopwords.words('english')
 stop_words.extend(['man', 'use', 'one', 'two', 'year', 'also', 'set', 'like'])
-
-en_model = spacy.load('en', disable=['ner', 'parser'])
-en_model.add_pipe(en_model.create_pipe('sentencizer'))
+en_model = spacy.load('en', disable=['parser', 'textcat'])
 
 
 def removeStopwords(texts):
     return [[word for word in simple_preprocess(abstract, deacc=True, min_len=3) if word not in stop_words] for abstract in texts]
 
 
-def makeBigrams(texts, bigramPhraser):
-    return [bigramPhraser[abstract] for abstract in texts]
-
-
-def makeTrigrams(texts, bigramPhraser, trigramPhraser):
+def makeNGrgrams(texts, bigramPhraser, trigramPhraser):
     return [trigramPhraser[bigramPhraser[abstract]] for abstract in texts]
 
 
-def lemmatize(texts):
-    return [[token.lemma_ for token in en_model(" ".join(abstract)) if token.tag_ != 'NNPS'] for abstract in texts]
+def applyWordnetMultiterms(texts, multitermDict):
+    result = []
+
+    for text in texts:
+        resultText = []
+        for index, word in enumerate(text):
+            if index == 0:
+                resultText.append(word)
+            else:
+                lastword = resultText[-1]
+                multiterm = "{}_{}".format(lastword, word)
+                key = multiterm[0]
+
+                if multiterm in multitermDict.get(key):
+                    resultText[-1] = multiterm
+                else:
+                    resultText.append(word)
+
+        result.append(resultText)
+
+    count = 0
+    for text, newText in list(zip(texts, result)):
+        count += abs(len(text) - len(newText))
+
+    log(INFO, "Found total of {} multiterms with wordnet samples".format(count))
+
+    return result
+
+
+def lemmatize(texts, allowed_token_tags=['NNP', 'NNS' 'NN']):
+
+    result = []
+    for abstract in texts:
+        doc = en_model(" ".join(abstract))
+
+        lemmas = [
+            token.lemma_ for token in doc if token.tag_ in allowed_token_tags]
+
+        result.append(lemmas)
+
+    return result
 
 
 def generatePhrasers(texts, min_count, threshold):
-    bigram = gensim.models.Phrases(texts, min_count=5, threshold=50)
-    trigram = gensim.models.Phrases(bigram[texts], threshold=50)
+    bigram = gensim.models.Phrases(texts, min_count=5, threshold=treshold)
+    trigram = gensim.models.Phrases(bigram[texts], threshold=threshold)
 
-    bigramMod = gensim.models.phrases.Phraser(bigram)
-    trigramMod = gensim.models.phrases.Phraser(trigram)
+    bigramPhraser = gensim.models.phrases.Phraser(bigram)
+    trigramPhraser = gensim.models.phrases.Phraser(trigram)
 
-    return bigramMod, trigramMod
+    return bigramPhraser, trigramPhraser
 
 
 def createDictionary(texts):

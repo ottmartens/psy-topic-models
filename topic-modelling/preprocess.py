@@ -20,32 +20,35 @@ log(INFO, 'Querying abstracts')
 texts, ids = getAbstracts()
 log(INFO, "Found {} abstracts".format(len(texts)))
 
-
 # Remove stopwords
 log(INFO, 'Removing stopwords')
 texts = removeStopwords(texts)
 
-
-# Generate phrasers for bigrams an trigrams
+# Generate phrasers for multiwords
 log(INFO, 'Generating phrasers')
 bigramPhraser, trigramPhraser = generatePhrasers(
-    texts, min_count=5, threshold=100)
+    texts, min_count=5, threshold=50)
 
-# Generate bigrams and trigrams
-log(INFO, "Generating bigrams")
-bigrams = makeBigrams(texts, bigramPhraser)
+# Generate multiword n-grams
+log(INFO, "Generating multiword n-grams")
+texts = makeNGrgrams(texts, bigramPhraser, trigramPhraser)
 
-log(INFO, 'Generating trigrams')
-trigrams = makeTrigrams(texts, bigramPhraser, trigramPhraser)
+# Parse all multiword terms from wordnet
+log(INFO, "Parsing wordnet multiterms into dictionary")
+wordnetMultitermDict = readMultiterms()
+
+# Match multiword terms from wordnet
+log(INFO, "Matching wordnet multiterms")
+texts = applyWordnetMultiterms(texts, wordnetMultitermDict)
 
 # Lemmatize the texts
 log(INFO, "Lemmatizing")
-texts = lemmatize(trigrams)
+texts = lemmatize(texts, allowed_token_tags=['NNP', 'NNS', 'NN'])
 
 # Write preprocessed texts to a file
 file_path = 'models/{}_lemmatized.csv'.format(model_name)
-log(INFO, "Writing lemmatized abstracts to file {}".format(file_path))
 
+log(INFO, "Writing lemmatized abstracts to file {}".format(file_path))
 writeCSV(file_path, list(zip(ids, texts)))
 
 log(INFO, "Finished")

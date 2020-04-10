@@ -20,3 +20,22 @@ def readCSV(file_name):
         texts = [ast.literal_eval(row[1]) for row in rows]
 
         return ids, texts
+
+
+def readMultiterms():
+
+    with open('wordnet_multiword_terms.csv', 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+
+        multitermDict = defaultdict(list)
+
+        for row in rows:
+            term = row[0].lower()
+            key = term[0]
+
+            multitermDict[key].append(term)
+
+        file.close()
+
+    return multitermDict
