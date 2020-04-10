@@ -6,7 +6,10 @@ from logging import log, INFO
 import gensim
 
 from utils import readCSV
+from preprocess_helpers import createCorpus, createDictionary
 
+logging.basicConfig(
+    format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
 
 def main():
 
@@ -23,6 +26,13 @@ def main():
             'Specify model name from the command line arguments (the same one from preprocessing')
         exit(1)
 
+    if len(sys.argv) < 2:
+        print("Specify topic counts to be ran as command line arguments")
+        exit(1)
+    
+    topic_ns = list(map(int, sys.argv[1:]))
+    log(INFO, "Generating model(s) with {} topics".format(topic_ns))
+
     source_file_path = 'models/{}_lemmatized.csv'.format(model_name)
 
     log(INFO, 'Parsing lemmatized texts from file {}'.format(source_file_path))
@@ -36,23 +46,26 @@ def main():
     log(INFO, "Creating a term document frequency corpus")
     corpus = createCorpus(id2word, texts)
 
-    # Generating a mallet lda model
-    log(INFO, "Generating a mallet lda model")
-    mallet_lda_model = gensim.models.wrappers.LdaMallet(
-        mallet_path, corpus=corpus, num_topics=25, id2word=id2word)
+    for num_topics in topic_ns:
 
-    model_path = 'models/{}'.format(model_name)
+        # Generating a mallet lda model
+        log(INFO, "Generating a mallet lda model")
+        mallet_lda_model = gensim.models.wrappers.LdaMallet(
+            mallet_path, corpus=corpus, num_topics=num_topics, id2word=id2word)
 
-    mallet_lda_model.save(model_path)
-    log(INFO, 'Saved model to file {}'.format(model_path))
+        model_path = 'models/{}_{}'.format(model_name, num_topics)
 
-    log(INFO, 'Generating a coherence model')
-    coherence_model = gensim.models.CoherenceModel(
-        model, corpus=corpus, dictionary=id2word)
+        mallet_lda_model.save(model_path)
+        log(INFO, 'Saved model to file {}'.format(model_path))
 
-    coherence = coherence_model.get_coherence()
-    log(INFO, 'Cohenrence of {} model: {}'.format(model_name, coherence))
+        log(INFO, 'Generating a coherence model')
+        coherence_model = gensim.models.CoherenceModel(
+            model=mallet_lda_model, texts=texts, dictionary=id2word, coherence='c_v')
 
+        coherence = coherence_model.get_coherence()
+        log(INFO, 'Cohenrence of {} model: {}'.format(model_name, coherence))
+
+    log(INFO, "Finished")
 
 if __name__ == '__main__':
     main()
