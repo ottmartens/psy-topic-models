@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 import ast
+from collections import defaultdict
 
 
 def writeCSV(file_name, data):
