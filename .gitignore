@@ -2,7 +2,7 @@
 
 pubmed-to-db/node_modules
 
-topic-modelling/__pycache__
+*/__pycache__
 
 topic-modelling/models/*
 
