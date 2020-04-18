@@ -30,10 +30,10 @@ def main():
         print("Specify topic counts to be ran as command line arguments")
         exit(1)
     
-    topic_ns = list(map(int, sys.argv[1:]))
+    topic_ns = list(map(int, sys.argv[2:]))
     log(INFO, "Generating model(s) with {} topics".format(topic_ns))
 
-    source_file_path = 'models/{}_lemmatized.csv'.format(model_name)
+    source_file_path = '{}_lemmatized.csv'.format(model_name)
 
     log(INFO, 'Parsing lemmatized texts from file {}'.format(source_file_path))
     ids, texts = readCSV(source_file_path)
