@@ -15,7 +15,7 @@ mallet_lda_model = gensim.models.utils.SaveLoad.load(
 
 topics = mallet_lda_model.show_topics(formatted=False, num_topics=num_topics)
 
-topic_file_path = 'models/{}_topics.csv'.format(model_name)
+topic_file_path = 'result-files/{}_topics.csv'.format(model_name)
 
 with open(topic_file_path, 'w') as file:
     writer = csv.writer(file)
