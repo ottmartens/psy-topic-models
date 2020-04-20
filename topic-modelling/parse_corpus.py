@@ -38,14 +38,14 @@ def save_corpus_to_file(model_name):
 
 def read_corpus_from_file():
 
-    log(INFO, "Parsing file")
+    log(INFO, "Parsing corpus from file")
 
     with open('flat_corpus.csv', 'r') as file:
         rows = list(csv.reader(file))
 
         result = []
 
-        log(INFO, "Converting to corpus tuple structure")
+        log(INFO, "Converting corpus to tuple structure")
 
         for row in rows:
             result.append(

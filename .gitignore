@@ -2,6 +2,8 @@
 
 pubmed-to-db/node_modules
 
+.ipynb_checkpoints
+
 */__pycache__
 
 topic-modelling/models/*
