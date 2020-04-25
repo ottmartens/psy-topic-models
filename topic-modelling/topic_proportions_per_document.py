@@ -2,7 +2,7 @@ import gensim
 import logging
 from logging import log, INFO
 
-from parse_corpus import read_corpus_from_file
+from transform_corpus import read_corpus_from_file
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)

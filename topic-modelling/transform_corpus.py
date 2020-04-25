@@ -10,14 +10,16 @@ logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
 
 
-def save_corpus_to_file(model_name):
+def save_corpus_and_dictionary_to_file():
     log(INFO, "Parsing texts")
 
-    ids, texts = readCSV("{}_lemmatized.csv".format(model_name))
+    ids, texts = readCSV("lemmatized.csv")
 
     log(INFO, "Creating dictionary")
 
     id2word = createDictionary(texts)
+
+    log(INFO, "Saving dictionary to a file")
 
     log(INFO, "Creating corpus")
 
@@ -37,8 +39,6 @@ def save_corpus_to_file(model_name):
 
 
 def read_corpus_from_file():
-
-    log(INFO, "Parsing corpus from file")
 
     with open('flat_corpus.csv', 'r') as file:
         rows = list(csv.reader(file))

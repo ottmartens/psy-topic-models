@@ -6,10 +6,12 @@ from logging import log, INFO
 import gensim
 
 from utils import readCSV
+from transform_corpus import read_corpus_from_file
 from preprocess_helpers import createCorpus, createDictionary
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
+
 
 def main():
 
@@ -20,52 +22,55 @@ def main():
         exit(1)
 
     try:
-        model_name = sys.argv[1]
+        model_type = sys.argv[1]
+
+        if model_type not in ['gensim', 'mallet']:
+            raise Exception
     except:
         print(
-            'Specify model name from the command line arguments (the same one from preprocessing')
+            'Specify model type as the first argument as either gensim or mallet')
         exit(1)
 
     if len(sys.argv) < 2:
         print("Specify topic counts to be ran as command line arguments")
         exit(1)
-    
+
     topic_ns = list(map(int, sys.argv[2:]))
-    log(INFO, "Generating model(s) with {} topics".format(topic_ns))
+    log(INFO, "Generating model(s) with {} topics".format(", ".join(topic_ns)))
 
-    source_file_path = '{}_lemmatized.csv'.format(model_name)
+    log(INFO, "Parsing dictionary from file")
+    id2word = gensim.utils.SaveLoad.load('dictionary')
 
-    log(INFO, 'Parsing lemmatized texts from file {}'.format(source_file_path))
-    ids, texts = readCSV(source_file_path)
-
-    # Generate a dictionary of the corpus
-    log(INFO, "Generating a dictionary")
-    id2word = createDictionary(texts)
-
-    # Create term document frequency corpus
-    log(INFO, "Creating a term document frequency corpus")
-    corpus = createCorpus(id2word, texts)
+    log(INFO, "Parsing corpus from file")
+    corpus = read_corpus_from_file()
 
     for num_topics in topic_ns:
 
-        # Generating a mallet lda model
-        log(INFO, "Generating a mallet lda model")
-        mallet_lda_model = gensim.models.wrappers.LdaMallet(
-            mallet_path, corpus=corpus, num_topics=num_topics, id2word=id2word)
+        model_name = '{}_{}'.format(model_type, num_topics)
 
-        model_path = 'models/{}_{}'.format(model_name, num_topics)
+        if model_type == 'gensim':
 
-        mallet_lda_model.save(model_path)
+            log(INFO, "Generating a gensim lda model")
+            model = gensim.models.ldamulticore(
+                corpus, num_topics=num_topics, id2word=id2word
+            )
+
+            log(INFO, "Perplexity of {} estimated of a fraction of the corpus: {}".format(
+                model_name, model.log_perplexity(corpus[::100])))
+
+        else:
+
+            log(INFO, "Generating a mallet lda model")
+            model = gensim.models.wrappers.LdaMallet(
+                mallet_path, corpus=corpus, num_topics=num_topics, id2word=id2word)
+
+        model_path = 'models/{}'.format(model_name)
+
+        model.save(model_path)
         log(INFO, 'Saved model to file {}'.format(model_path))
 
-        log(INFO, 'Generating a coherence model')
-        coherence_model = gensim.models.CoherenceModel(
-            model=mallet_lda_model, texts=texts, dictionary=id2word, coherence='c_v')
-
-        coherence = coherence_model.get_coherence()
-        log(INFO, 'Cohenrence of {} model: {}'.format(model_name, coherence))
-
     log(INFO, "Finished")
+
 
 if __name__ == '__main__':
     main()

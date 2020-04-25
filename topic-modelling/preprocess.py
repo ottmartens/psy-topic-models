@@ -9,19 +9,13 @@ from utils import writeCSV, readCSV
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
 
-try:
-    model_name = sys.argv[1]
-except:
-    print('Specify model name from the command line')
-    exit(1)
-
 # Query abstracts from db
 log(INFO, 'Querying abstracts')
 texts, ids = getAbstracts()
 log(INFO, "Found {} abstracts".format(len(texts)))
 
-# Remove stopwords
-log(INFO, 'Removing stopwords')
+# Tokenize, remove stopwords
+log(INFO, 'Tokenizing and removing stopwords')
 texts = removeStopwords(texts)
 
 # Generate phrasers for multiwords
@@ -41,12 +35,12 @@ wordnetMultitermDict = readMultiterms()
 log(INFO, "Matching wordnet multiterms")
 texts = applyWordnetMultiterms(texts, wordnetMultitermDict)
 
-# Lemmatize the texts
+# Lemmatize the texts and filter for allowed token tags
 log(INFO, "Lemmatizing")
 texts = lemmatize(texts, allowed_token_tags=['NNP', 'NNS', 'NN'])
 
 # Write preprocessed texts to a file
-file_path = 'models/{}_lemmatized.csv'.format(model_name)
+file_path = 'models/lemmatized.csv'.format(model_name)
 
 log(INFO, "Writing lemmatized abstracts to file {}".format(file_path))
 writeCSV(file_path, list(zip(ids, texts)))

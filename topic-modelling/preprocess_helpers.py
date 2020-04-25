@@ -8,7 +8,6 @@ from logging import log, INFO
 from utils import *
 
 stop_words = stopwords.words('english')
-stop_words.extend(['man', 'use', 'one', 'two', 'year', 'also', 'set', 'like'])
 en_model = spacy.load('en', disable=['parser', 'textcat'])
 
 
