@@ -8,6 +8,7 @@ import gensim
 from utils import readCSV
 from transform_corpus import read_corpus_from_file
 from preprocess_helpers import createCorpus, createDictionary
+import multiprocessing
 
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
@@ -36,7 +37,10 @@ def main():
         exit(1)
 
     topic_ns = list(map(int, sys.argv[2:]))
-    log(INFO, "Generating model(s) with {} topics".format(", ".join(topic_ns)))
+    log(INFO, "Generating model(s) with {} topics".format(", ".join(sys.argv[2:])))
+
+    worker_count =  min(multiprocessing.cpu_count() - 2, 8)
+    log(INFO, "Using {} parallel workers".format(worker_count))
 
     log(INFO, "Parsing dictionary from file")
     id2word = gensim.utils.SaveLoad.load('dictionary')
@@ -51,8 +55,8 @@ def main():
         if model_type == 'gensim':
 
             log(INFO, "Generating a gensim lda model")
-            model = gensim.models.ldamulticore(
-                corpus, num_topics=num_topics, id2word=id2word
+            model = gensim.models.ldamulticore.LdaMulticore(
+                corpus, num_topics=num_topics, id2word=id2word, workers=worker_count
             )
 
             log(INFO, "Perplexity of {} estimated of a fraction of the corpus: {}".format(
@@ -62,7 +66,7 @@ def main():
 
             log(INFO, "Generating a mallet lda model")
             model = gensim.models.wrappers.LdaMallet(
-                mallet_path, corpus=corpus, num_topics=num_topics, id2word=id2word)
+                mallet_path, corpus=corpus, num_topics=num_topics, id2word=id2word, workers=worker_count)
 
         model_path = 'models/{}'.format(model_name)
 

@@ -21,6 +21,8 @@ def save_corpus_and_dictionary_to_file():
 
     log(INFO, "Saving dictionary to a file")
 
+    id2word.save("dictionary")
+
     log(INFO, "Creating corpus")
 
     corpus = createCorpus(id2word, texts)
