@@ -27,7 +27,11 @@ def main():
 
         log(INFO, "Loading model {} from file".format(model_name))
         model_path = 'models/{}'.format(model_name)
-        model = gensim.utils.SaveLoad.load(model_path)
+
+        if 'mallet' in model_name:
+            model = gensim.models.wrappers.LdaMallet.load(model_path)
+        else:
+            model = gensim.models.LdaModel.load(model_path)
 
         coherence = get_coherence(model, texts, id2word)
         coherences.append(coherence)
