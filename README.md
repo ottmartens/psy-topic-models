@@ -26,3 +26,11 @@ _in topic-modelling:_
 ##### 3.2 Generate a topic model: `python generate_model.py <'gensim' | 'mallet'> ...topic_number_configurations`
 ##### 3.3 Calculate coherence scores: `python get_coherence.py ...model_names`
 ##### 3.4 Extract topics to a csv file: `python extract_topics.py <model-name> <number of topics>`
+
+## 4. Dynamic topic model
+_in topic-modelling:_
+##### 4.1 Order corpus per year "from transform_corpus import *; save_corpus_ordered_by_year()"
+##### 4.2 Dowload precompiled dtm binary from https://github.com/magsilva/dtm/tree/master/bin
+##### 4.3 Set DTM_BINARY_PATH to downloaded binary
+##### 4.3 Make sure you have gsl/libgs library installed
+##### 4.4 Generate the model `python dynamic_topic_model.py <num_topics>`
