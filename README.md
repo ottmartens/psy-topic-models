@@ -8,8 +8,9 @@ Requires: `docker`, `node`, `python`
 _in pubmed-to-db:_
 ##### 1.1 Install dependencies: `npm install`
 ##### 1.2 Start database: `docker-compose up`
-##### 1.2 Create database table structure: `node db-setup.js`
-##### 1.2 Parse file: `node parse-from-xml.js <path-to-xml-file>`
+##### 1.3 Create database table structure: `node db-setup.js`
+##### 1.4 Download xml-results from the source: `https://www.ncbi.nlm.nih.gov/pubmed/?term=psychology`
+##### 1.5 Parse file: `node parse-from-xml.js <path-to-xml-file>`
 _(xml-file refers to an export from pubmed)_
 
 ## 2. Preprocessing
