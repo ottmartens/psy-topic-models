@@ -9,14 +9,16 @@ from utils import writeCSV, readCSV
 logging.basicConfig(
     format='%(asctime)s : %(levelname)s : %(message)s', level=INFO)
 
-# Query abstracts from db
-log(INFO, 'Querying abstracts')
-texts, ids = getAbstracts()
-log(INFO, "Found {} abstracts".format(len(texts)))
+# # Query abstracts from db
+# log(INFO, 'Querying abstracts')
+# texts, ids = getAbstracts()
+# log(INFO, "Found {} abstracts".format(len(texts)))
 
-# Tokenize, remove stopwords
-log(INFO, 'Tokenizing and removing stopwords')
-texts = removeStopwords(texts)
+# # Tokenize, remove stopwords
+# log(INFO, 'Tokenizing and removing stopwords')
+# texts = removeStopwords(texts)
+
+ids, texts = readCSV('stopwords.csv')
 
 # Generate phrasers for multiwords
 log(INFO, 'Generating phrasers')
